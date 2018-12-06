@@ -15,25 +15,94 @@ import NavigationClose from "material-ui/svg-icons/navigation/close";
 import logo from "./logo.svg";
 import "./App.css";
 
-class App extends Component {
+interface State {
+  repos: object[];
+  lastPostName?: string | undefined;
+}
+
+class App extends Component<{}, State> {
+  constructor(props: any) {
+    super(props);
+    this.state = { repos: [] };
+  }
+
+  fetchFirst = (url: string) => {
+    if (url) {
+      fetch(`https://api.github.com/users/${url}/repos`)
+        .then(response => response.json())
+        .then(result => {
+          this.setState({
+            repos: result,
+            lastPostName: result[result.length - 1].name
+          });
+          console.log(this.state.repos);
+        });
+    }
+  };
+
+  fetchNext = (url: string, lastPostName: any) => {
+    if (url) {
+      fetch(``)
+        .then(response => response.json())
+        .then(result => {
+          this.setState({
+            repos: result,
+            lastPostName: result[result.length - 1].name
+          });
+          console.log(this.state.repos);
+        });
+    }
+  };
+
+  componentDidMount() {
+    this.fetchFirst("cernanb");
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <MuiThemeProvider>
+        <div>
+          <AppBar
+            title={<span>React PWA</span>}
+            iconElementLeft={
+              <IconButton>
+                <NavigationClose />
+              </IconButton>
+            }
+            iconElementRight={
+              <FlatButton
+                onClick={() =>
+                  this.fetchNext("reactjs", this.state.lastPostName)
+                }
+                label="next"
+              />
+            }
+          />
+          {this.state.repos.map((el: any, index: number) => (
+            <Card key={index}>
+              <CardHeader
+                title={el.name}
+                subtitle={el.owner.login}
+                actAsExpander={el.fork === true}
+                showExpandableButton={false}
+              />
+              <CardText expandable={el.fork === true}>{el.language}</CardText>
+              <CardActions>
+                <FlatButton
+                  label="View"
+                  onClick={() => {
+                    window.open(el.html_url);
+                  }}
+                />
+              </CardActions>
+            </Card>
+          ))}
+          <FlatButton
+            onClick={() => this.fetchNext("reactjs", this.state.lastPostName)}
+            label="next"
+          />
+        </div>
+      </MuiThemeProvider>
     );
   }
 }
