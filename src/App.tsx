@@ -12,7 +12,6 @@ import FlatButton from "material-ui/FlatButton";
 import IconButton from "material-ui/IconButton";
 import NavigationClose from "material-ui/svg-icons/navigation/close";
 
-import logo from "./logo.svg";
 import "./App.css";
 
 interface State {
@@ -55,7 +54,7 @@ class App extends Component<{}, State> {
   };
 
   componentDidMount() {
-    this.fetchFirst("cernanb");
+    this.fetchFirst("itzsaga");
   }
 
   render() {
